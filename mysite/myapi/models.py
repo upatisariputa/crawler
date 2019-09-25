@@ -16,7 +16,7 @@ class Videos(models.Model):
 
 
 class Users(models.Model):
-    image = models.CharField(max_length=500)
+    image_url = models.URLField(max_length=400, blank=True)
     user_name = models.CharField(max_length=50)
     signup_date = models.DateField(null=True, blank=True)
     user_info = models.TextField()
