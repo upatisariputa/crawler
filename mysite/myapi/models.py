@@ -2,6 +2,14 @@ from django.db import models
 
 # Create your models here.
 
+class Post(models.Model):
+    title = models.CharField(max_length=200)
+    content = modles.TextField()
+
+    def __str__(self):
+        """A string representation of the model."""
+        return self.title
+
 
 class Videos(models.Model):
     title = models.CharField(max_length=50)

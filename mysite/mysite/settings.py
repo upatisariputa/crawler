@@ -25,7 +25,7 @@ SECRET_KEY = 'wio5(kh9+gr!*ohm8u8+1m1je#198%-$by!gxo)2fskop55-i*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -38,12 +38,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'rest_framework',
-    # 'myapi'
+    'myapi',
+    'corsheaders'
 
 ]
 
-MIDDLEWARE = [
+MIDDLEWARE = [          
+    'corsheaders.middleware.CorsMiddleware',     # 추가
+    'django.middleware.common.CommonMiddleware',  # 추가
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
