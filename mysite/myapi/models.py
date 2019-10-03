@@ -2,12 +2,6 @@ from django.db import models
 
 # Create your models here.
 
-<<<<<<< HEAD
-class Post(models.Model):
-    title = models.CharField(max_length=200)
-    content = models.TextField()
-=======
->>>>>>> 2dcecb88a785c836074a1a21c55ef7f3938716ff
 
 class Platform(models.Model):
     P_key = models.AutoField(primary_key=True)
