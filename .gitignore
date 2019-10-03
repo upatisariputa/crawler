@@ -6,3 +6,6 @@ dfb.sqlite3
 /static
 .DS_Store
 .vscode
+migrations
+/__pycache__
+
