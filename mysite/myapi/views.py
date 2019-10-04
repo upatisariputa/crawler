@@ -18,43 +18,48 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "illio.settings")
 
 
 class MainViewSet(viewsets.ModelViewSet):
-    print(Platform.objects.all())
+    queryset = Platform.objects.all()
+    serializer_class = platformSerializer
 
 
-# class BjViewSet(viewsets.ModelViewSet):
+class BjViewSet(viewsets.ModelViewSet):
+    # queryset = User_info.objects.all()
+    # serializer_class = User_infoSerializer
 
-def Bj_info(request, userkey):
-    if request.method == "POST":
-        user = User_info.objects.filter(P_key=userkey)
-        sub = Subscribe.objects.filter(P_key=userkey)
-        youtube = Platform.objects.prefetch_related(
-            "total").filter(P_key=userkey).get(P_name=youtube)
-        twitch = Platform.objects.prefetch_related(
-            "total").filter(P_key=userkey).get(P_name=youtube)
-        afreeca = Platform.objects.prefetch_related(
-            "total").filter(P_key=userkey).get(P_name=youtube)
-        result = {"name": user.U_nmae,
-                  "image": user.U_img,
-                  "signup-date": user.U_suday,
-                  "introduce": user.U_info,
-                  "currnet_sub": {
-                      "youtube": sub,
-                      "twitch": sub,
-                      "afreeca": sub
-                  },
-                  "youtube": {
-                      "total_like": youtube.T_like,
-                      "total_dislike": youtube.T_dislike,
-                      "total_view": youtube.T_view
-                  },
-                  "twitch": {
-                      "total_view": twitch.T_view
-                  },
-                  "afreeca": {
-                      "total_like": afreeca.T_like,
-                      "total_view": afreeca.T_view
-                  }
-                  }
+    def Bj_info(self, request):
+        # if request.method == "POST":
+        queryset = User_info.objects.filter(P_key=request)
+        serializer_class = User_infoSerializer
+        print(request)
+        # sub = Subscribe.objects.filter(P_key=request)
+        # youtube = Platform.objects.prefetch_related(
+        #     "total").filter(P_key=request).get(P_name=youtube)
+        # twitch = Platform.objects.prefetch_related(
+        #     "total").filter(P_key=request).get(P_name=youtube)
+        # afreeca = Platform.objects.prefetch_related(
+        #     "total").filter(P_key=request).get(P_name=youtube)
+        # result = {"name": user.U_nmae,
+        #           "image": user.U_img,
+        #           "signup-date": user.U_suday,
+        #           "introduce": user.U_info,
+        #           "currnet_sub": {
+        #               "youtube": sub,
+        #               "twitch": sub,
+        #               "afreeca": sub
+        #           },
+        #           "youtube": {
+        #               "total_like": youtube.T_like,
+        #               "total_dislike": youtube.T_dislike,
+        #               "total_view": youtube.T_view
+        #           },
+        #           "twitch": {
+        #               "total_view": twitch.T_view
+        #           },
+        #           "afreeca": {
+        #               "total_like": afreeca.T_like,
+        #               "total_view": afreeca.T_view
+        #           }
+        #           }
 
 
 class SubListViewSet(viewsets.ModelViewSet):
@@ -63,8 +68,8 @@ class SubListViewSet(viewsets.ModelViewSet):
 
 
 class BjListViewSet(viewsets.ModelViewSet):
-    queryset = Platform.objects.all().select_related("Total")
-    serializer_class = platformSerializer
+    queryset = Video.objects.all()
+    serializer_class = VideoSerializer
 
 
 class MaxLikeVideo(viewsets.ModelViewSet):
