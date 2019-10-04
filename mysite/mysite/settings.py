@@ -45,7 +45,7 @@ INSTALLED_APPS = [
 
 ]
 
-MIDDLEWARE = [          
+MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',     # 추가
     'django.middleware.common.CommonMiddleware',  # 추가
     'django.middleware.security.SecurityMiddleware',
@@ -128,13 +128,13 @@ CORS_ORIGIN_WHITELIST = ('http://localhost:3000',)
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
