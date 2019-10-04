@@ -16,15 +16,28 @@ import os
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "illio.settings")
 
+# Filtered_data.objects.filter(category=category_id["id"], brand=brand)
+# .values("model")
+# .order_by("model")
+# .distinct()
+
 
 class MainViewSet(viewsets.ModelViewSet):
-    queryset = Platform.objects.all()
-    serializer_class = platformSerializer
+    # queryset = Platform.objects.filter(P_key=1, P_name="afreeca").values()
+    # queryset = Platform.objects.select_related("User_info")
+
+    # def platform(self, request):
+    #     queryset = Platform.objects.select_related("P_key")
+    #     serializer_class = platformSerializer
+
+    # queryset = Platform.objects.filter(P_name="afreeca")
+    queryset = User_info.objects.all()
+    serializer_class = User_infoSerializer
 
 
 class BjViewSet(viewsets.ModelViewSet):
-    # queryset = User_info.objects.all()
-    # serializer_class = User_infoSerializer
+    queryset = User_info.objects.prefetch_related('P_key')
+    serializer_class = User_infoSerializer
 
     def Bj_info(self, request):
         # if request.method == "POST":
