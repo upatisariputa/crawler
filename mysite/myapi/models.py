@@ -29,7 +29,8 @@ class Subscribe(models.Model):
     month = models.CharField(max_length=2)
     week = models.CharField(max_length=4)
     day = models.CharField(max_length=2)
-    P_key = models.ForeignKey(Platform, on_delete=models.CASCADE)
+    P_key = models.ForeignKey(
+        Platform, related_name="Platform", on_delete=models.CASCADE)
     objects = models.Manager()
 
 
