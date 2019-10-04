@@ -21,8 +21,7 @@ class platformSerializer(serializers.ModelSerializer):
 class User_infoSerializer(serializers.ModelSerializer):
     class Meta:
         model = User_info
-        fields = ("U_key", "U_name", "U_img", "U_info",
-                  "platform", "U_sudate", "P_key")
+        fields = ("U_key", "U_name", "U_img", "U_info", "U_sudate", "P_key")
 
 
 class SubSerializer(serializers.ModelSerializer):
