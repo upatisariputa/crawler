@@ -85,3 +85,5 @@ class MaxViewCount(viewsets.ModelViewSet):
 class MinViewCount(viewsets.ModelViewSet):
     queryset = Video.objects.all().order_by("view_count")
     serializer_class = VideoSerializer
+
+# def MaxGapYotubeViewSet(request,)
