@@ -17,7 +17,8 @@ class User_info(models.Model):
     U_img = models.CharField(max_length=100)
     U_info = models.CharField(max_length=100)
     U_sudate = models.CharField(max_length=20)
-    P_key = models.ForeignKey(Platform, on_delete=models.CASCADE)
+    P_key = models.ForeignKey(
+        Platform, related_name="User", on_delete=models.CASCADE)
     objects = models.Manager()
 
 
@@ -29,7 +30,8 @@ class Subscribe(models.Model):
     month = models.CharField(max_length=2)
     week = models.CharField(max_length=4)
     day = models.CharField(max_length=2)
-    P_key = models.ForeignKey(Platform, on_delete=models.CASCADE)
+    P_key = models.ForeignKey(
+        Platform, related_name="Sub", on_delete=models.CASCADE)
     objects = models.Manager()
 
 
@@ -45,7 +47,8 @@ class Video(models.Model):
     month = models.CharField(max_length=2)
     week = models.CharField(max_length=4)
     day = models.CharField(max_length=2)
-    P_key = models.ForeignKey(Platform, on_delete=models.CASCADE)
+    P_key = models.ForeignKey(
+        Platform, related_name="Video", on_delete=models.CASCADE)
     objects = models.Manager()
 
 
@@ -55,28 +58,32 @@ class Total(models.Model):
     T_unlike_count = models.IntegerField(default=0)
     T_view_count = models.IntegerField(default=0)
     T_update = models.DateField(null=False)
-    P_key = models.ForeignKey(Platform, on_delete=models.CASCADE)
+    P_key = models.ForeignKey(
+        Platform, related_name="Total", on_delete=models.CASCADE)
     objects = models.Manager()
 
 
 class D_sub_gap(models.Model):
     SD_key = models.AutoField(primary_key=True)
     sub_count = models.IntegerField(default=0)
-    P_key = models.ForeignKey(Platform, models.CASCADE)
+    P_key = models.ForeignKey(
+        Platform, related_name="SD_gap", on_delete=models.CASCADE)
     objects = models.Manager()
 
 
 class W_sub_gap(models.Model):
     SW_key = models.AutoField(primary_key=True)
     sub_count = models.IntegerField(default=0)
-    P_key = models.ForeignKey(Platform, models.CASCADE)
+    P_key = models.ForeignKey(
+        Platform, related_name="SW_gap", on_delete=models.CASCADE)
     objects = models.Manager()
 
 
 class M_sub_gap(models.Model):
     SM_key = models.AutoField(primary_key=True)
     sub_count = models.IntegerField(default=0)
-    P_key = models.ForeignKey(Platform, models.CASCADE)
+    P_key = models.ForeignKey(
+        Platform, related_name="SM_gap", on_delete=models.CASCADE)
     objects = models.Manager()
 
 
@@ -86,7 +93,8 @@ class D_video_gap(models.Model):
     dislike_Y = models.IntegerField(default=0)
     view_A_Y_T = models.IntegerField(default=0)
     comment_A_Y = models.IntegerField(default=0)
-    P_key = models.ForeignKey(Platform, models.CASCADE)
+    P_key = models.ForeignKey(
+        Platform, related_name="VD_gap", on_delete=models.CASCADE)
     objects = models.Manager()
 
 
@@ -96,7 +104,8 @@ class W_video_gap(models.Model):
     dislike_Y = models.IntegerField(default=0)
     view_A_Y_T = models.IntegerField(default=0)
     comment_A_Y = models.IntegerField(default=0)
-    P_key = models.ForeignKey(Platform, models.CASCADE)
+    P_key = models.ForeignKey(
+        Platform, related_name="VW_gap", on_delete=models.CASCADE)
     objects = models.Manager()
 
 
@@ -106,5 +115,6 @@ class M_video_gap(models.Model):
     dislike_Y = models.IntegerField(default=0)
     view_A_Y_T = models.IntegerField(default=0)
     comment_A_Y = models.IntegerField(default=0)
-    P_key = models.ForeignKey(Platform, models.CASCADE)
+    P_key = models.ForeignKey(
+        Platform, related_name="VM_gap", on_delete=models.CASCADE)
     objects = models.Manager()
