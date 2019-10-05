@@ -2,16 +2,8 @@ import pymysql.cursors
 import requests
 import time
 from multiprocessing import Pool
-from .serializers import PlatformSerializer
+from rest_framework import
 from myapi.models import Platform
-from myapi.models import User_info
-from rest_framework.response import Response
-from rest_framework import viewsets
-from rest_framework import serializers
-from rest_framework.decorators import api_view
-import os
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ilio.settings")
 
 headers = {'Client-ID': 'orr8549md8anh4puxs904dyswcgfb3',
            'referer': 'https://twitch.tv'}
@@ -46,5 +38,4 @@ user_ids = ['425968734', '267512124', '136832079', '169206387', '254028851', '41
 # if __name__ == '__main__':
 #     multiprocesses()
 
-serializer_class = PlatformSerializer(Platform)
-serializer_class.data
+print(Platform.objects.all())
