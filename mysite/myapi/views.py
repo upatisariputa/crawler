@@ -17,7 +17,7 @@ from rest_framework.decorators import api_view
 from rest_framework import permissions
 import os
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "illio.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ilio.settings")
 
 
 class MainViewSet(viewsets.ModelViewSet):
