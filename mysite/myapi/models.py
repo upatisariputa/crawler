@@ -3,6 +3,11 @@ from django.db import models
 # Create your models here.
 
 
+class Post(models.Model):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+
+
 class Platform(models.Model):
     P_key = models.AutoField(primary_key=True)
     P_url = models.CharField(max_length=500)
