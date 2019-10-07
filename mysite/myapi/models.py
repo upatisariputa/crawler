@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.conf import settings
 # Create your models here.
 
 
@@ -15,9 +15,6 @@ class Platform(models.Model):
     P_name = models.CharField(max_length=10)
     objects = models.Manager()
 
-    def __str__(self):
-        return self.name
-
 
 class User_info(models.Model):
     U_key = models.AutoField(primary_key=True)
@@ -28,9 +25,6 @@ class User_info(models.Model):
     P_key = models.ForeignKey(
         Platform, related_name="User", on_delete=models.CASCADE)
     objects = models.Manager()
-
-    def __str__(self):
-        return self.name
 
 
 class Subscribe(models.Model):
@@ -44,9 +38,6 @@ class Subscribe(models.Model):
     P_key = models.ForeignKey(
         Platform, related_name="Sub", on_delete=models.CASCADE)
     objects = models.Manager()
-
-    def __str__(self):
-        return self.name
 
 
 class Video(models.Model):
@@ -65,9 +56,6 @@ class Video(models.Model):
         Platform, related_name="Video", on_delete=models.CASCADE)
     objects = models.Manager()
 
-    def __str__(self):
-        return self.name
-
 
 class Total(models.Model):
     T_key = models.AutoField(primary_key=True)
@@ -79,9 +67,6 @@ class Total(models.Model):
         Platform, related_name="Total", on_delete=models.CASCADE)
     objects = models.Manager()
 
-    def __str__(self):
-        return self.name
-
 
 class D_sub_gap(models.Model):
     SD_key = models.AutoField(primary_key=True)
@@ -89,9 +74,6 @@ class D_sub_gap(models.Model):
     P_key = models.ForeignKey(
         Platform, related_name="SD_gap", on_delete=models.CASCADE)
     objects = models.Manager()
-
-    def __str__(self):
-        return self.name
 
 
 class W_sub_gap(models.Model):
@@ -101,9 +83,6 @@ class W_sub_gap(models.Model):
         Platform, related_name="SW_gap", on_delete=models.CASCADE)
     objects = models.Manager()
 
-    def __str__(self):
-        return self.name
-
 
 class M_sub_gap(models.Model):
     SM_key = models.AutoField(primary_key=True)
@@ -111,9 +90,6 @@ class M_sub_gap(models.Model):
     P_key = models.ForeignKey(
         Platform, related_name="SM_gap", on_delete=models.CASCADE)
     objects = models.Manager()
-
-    def __str__(self):
-        return self.name
 
 
 class D_video_gap(models.Model):
@@ -126,9 +102,6 @@ class D_video_gap(models.Model):
         Platform, related_name="VD_gap", on_delete=models.CASCADE)
     objects = models.Manager()
 
-    def __str__(self):
-        return self.name
-
 
 class W_video_gap(models.Model):
     VW_key = models.AutoField(primary_key=True)
@@ -140,9 +113,6 @@ class W_video_gap(models.Model):
         Platform, related_name="VW_gap", on_delete=models.CASCADE)
     objects = models.Manager()
 
-    def __str__(self):
-        return self.name
-
 
 class M_video_gap(models.Model):
     VM_key = models.AutoField(primary_key=True)
@@ -153,6 +123,3 @@ class M_video_gap(models.Model):
     P_key = models.ForeignKey(
         Platform, related_name="VM_gap", on_delete=models.CASCADE)
     objects = models.Manager()
-
-    def __str__(self):
-        return self.name

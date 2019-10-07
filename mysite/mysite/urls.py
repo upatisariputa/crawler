@@ -16,7 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_jwt.views import obtain_jwt_token  # 추가
-
 from django.conf.urls import url  # API
 
 urlpatterns = [

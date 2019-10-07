@@ -3,7 +3,7 @@ import json
 import pymysql
 import time
 
-URL = "http://bjapi.afreecatv.com/api/kmkm951/vods"
+URL = "http://bjapi.afreecatv.com/api/wjddk26/vods"
 response = urlopen(URL)
 page = json.load(response)["meta"]["last_page"]+1
 
@@ -39,7 +39,7 @@ for i in range(1, page):
                 month,
                 week,
                 day,
-                1
+                2
             ))
 
         conn.commit()

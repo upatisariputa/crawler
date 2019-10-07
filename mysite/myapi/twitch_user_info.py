@@ -2,7 +2,6 @@ import pymysql.cursors
 import requests
 import time
 from multiprocessing import Pool
-from rest_framework import
 from myapi.models import Platform
 
 headers = {'Client-ID': 'orr8549md8anh4puxs904dyswcgfb3',
