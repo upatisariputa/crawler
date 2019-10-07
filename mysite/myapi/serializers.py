@@ -12,6 +12,12 @@ from .models import W_video_gap
 from .models import M_video_gap
 
 
+class PlatformSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Platform
+        fields = ["P_key", "P_url", "P_name", "P_userkey"]
+
+
 class User_infoSerializer(serializers.ModelSerializer):
     class Meta:
         model = User_info

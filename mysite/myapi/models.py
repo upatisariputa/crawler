@@ -1,21 +1,26 @@
 from django.db import models
-
+from django.conf import settings
 # Create your models here.
+
+
+class Post(models.Model):
+    title = models.CharField(max_length=200)
+    content = models.TextField()
 
 
 class Platform(models.Model):
     P_key = models.AutoField(primary_key=True)
-    P_url = models.CharField(max_length=100)
-    P_userkey = models.IntegerField(default=0)
+    P_url = models.CharField(max_length=500)
+    P_userkey = models.CharField(max_length=10)
     P_name = models.CharField(max_length=10)
     objects = models.Manager()
 
 
 class User_info(models.Model):
     U_key = models.AutoField(primary_key=True)
-    U_name = models.CharField(max_length=20)
-    U_img = models.CharField(max_length=100)
-    U_info = models.CharField(max_length=100)
+    U_name = models.CharField(max_length=500)
+    U_img = models.CharField(max_length=500)
+    U_info = models.CharField(max_length=500)
     U_sudate = models.CharField(max_length=20)
     P_key = models.ForeignKey(
         Platform, related_name="User", on_delete=models.CASCADE)
@@ -37,7 +42,7 @@ class Subscribe(models.Model):
 
 class Video(models.Model):
     V_key = models.AutoField(primary_key=True)
-    V_name = models.CharField(max_length=100)
+    V_name = models.CharField(max_length=500)
     V_upload = models.DateField(null=False)
     like_A_Y = models.IntegerField(default=0)
     dislike_Y = models.IntegerField(default=0)
