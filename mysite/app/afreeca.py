@@ -1,20 +1,9 @@
-from myapi.models import Platform
 from selenium import webdriver
 from urllib.request import Request, urlopen
 import json
 import pymysql
 import time
-import django
-import os
-import sys
 
-sys.path.append("mysite/myapi/models.py")
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
-django.setup()
-
-
-if __name__ == "__main__":
-    print(Platform.objects.all())
 
 # 크롬 headless 설정(크롬 창이 뜨지 않게 된다.)
 options = webdriver.ChromeOptions()
