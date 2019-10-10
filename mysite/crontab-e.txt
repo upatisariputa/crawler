@@ -1,0 +1,17 @@
+PYTHONPATH=/Users/damagedcase/Documents/Code States/IM14/crawler/.env/lib/python3.7/site-packages
+40 00 10 10 * cd Documents && cd Code\ States && cd IM14 && cd crawler && cd mysite && /usr/local/bin/python3 twitch_process1.py
+45 00 10 10 * cd Documents && cd Code\ States && cd IM14 && cd crawler && cd mysite && /usr/local/bin/python3 twitch_process2.py
+50 00 10 10 * cd Documents && cd Code\ States && cd IM14 && cd crawler && cd mysite && /usr/local/bin/python3 twitch_process3.py
+55 00 10 10 * cd Documents && cd Code\ States && cd IM14 && cd crawler && cd mysite && /usr/local/bin/python3 twitch_process4.py
+00 01 10 10 * cd Documents && cd Code\ States && cd IM14 && cd crawler && cd mysite && /usr/local/bin/python3 twitch_process5.py
+05 01 10 10 * cd Documents && cd Code\ States && cd IM14 && cd crawler && cd mysite && /usr/local/bin/python3 twitch_process6.py
+10 01 10 10 * cd Documents && cd Code\ States && cd IM14 && cd crawler && cd mysite && /usr/local/bin/python3 twitch_process7.py
+15 01 10 10 * cd Documents && cd Code\ States && cd IM14 && cd crawler && cd mysite && /usr/local/bin/python3 twitch_process8.py
+20 01 10 10 * cd Documents && cd Code\ States && cd IM14 && cd crawler && cd mysite && /usr/local/bin/python3 twitch_process9.py
+25 01 10 10 * cd Documents && cd Code\ States && cd IM14 && cd crawler && cd mysite && /usr/local/bin/python3 twitch_process10.py
+30 01 10 10 * cd Documents && cd Code\ States && cd IM14 && cd crawler && cd mysite && /usr/local/bin/python3 twitch_process11.py
+35 01 10 10 * cd Documents && cd Code\ States && cd IM14 && cd crawler && cd mysite && /usr/local/bin/python3 twitch_process12.py
+40 01 10 10 * cd Documents && cd Code\ States && cd IM14 && cd crawler && cd mysite && /usr/local/bin/python3 twitch_process13.py
+45 01 10 10 * cd Documents && cd Code\ States && cd IM14 && cd crawler && cd mysite && /usr/local/bin/python3 twitch_process14.py
+50 01 10 10 * cd Documents && cd Code\ States && cd IM14 && cd crawler && cd mysite && /usr/local/bin/python3 twitch_process15.py
+55 01 10 10 * cd Documents && cd Code\ States && cd IM14 && cd crawler && cd mysite && /usr/local/bin/python3 twitch_process16.py
