@@ -35,10 +35,15 @@ def get_platform_info():
         P_url = sheet.cell(r, 1).value
         P_name = sheet.cell(r, 2).value
 
-        with conn.cursor() as cursor:
-            sql = 'INSERT INTO myapi_platform (P_url, P_userkey, P_name) VALUES (%s, %s, %s)'
-            cursor.execute(sql, (P_url, P_userkey, P_name))
-        conn.commit()
+        if bool(Platform.objects.filter(P_userkey=P_userkey)):
+            with conn.cursor() as cursor:
+                sql = 'UPDATE myapi_platform SET P_url=%s, P_name=%s WHERE P_userkey=%s'
+                cursor.execute(sql, (P_url, P_name, P_userkey)) 
+        else :
+            with conn.cursor() as cursor:
+                sql = 'INSERT INTO myapi_platform (P_url, P_userkey, P_name) VALUES (%s, %s, %s)'
+                cursor.execute(sql, (P_url, P_userkey, P_name))
+            conn.commit()
     print('data migration complete')
 
 
@@ -50,7 +55,7 @@ def get_info(p):
                             db='ilio',
                             charset='utf8mb4')
     name = p['P_url'].replace('http://bj.afreecatv.com/', '')
-#  print(i['P_url'].replace(r'(/(http(s)?:\/\/)([a-z0-9\w]+\.*)+[a-z0-9]{2,4}\//gi)', ')) 정규 표현식 사용법 찾아보기
+
     # 팬클럽, 서포터  수 정보
     URL = 'http://bjapi.afreecatv.com/api/'+ name +'/station/detail'
     response = urlopen(URL)
@@ -78,7 +83,7 @@ def get_info(p):
         sql = 'INSERT INTO myapi_subscribe (created_at, S_count, year, month, week, day, P_key_id) VALUES (%s, %s, %s, %s, %s, %s, %s)'
         cursor.execute(sql, (createtime, fav_fan, year, month, week, day, p['P_key']))
     conn.commit()
-    print('entering')
+
 
     time.sleep(2)
 
@@ -88,14 +93,14 @@ def get_info(p):
             sql = 'UPDATE myapi_user_info SET U_name=%s, U_img=%s, U_info=%s WHERE P_key_id=%s'
             cursor.execute(sql, (name, img, introduce, p['P_key']))
         conn.commit()
-        print('entering')
+
 
     else:
         with conn.cursor() as cursor:      
             sql = 'INSERT INTO myapi_user_info (U_name, U_img, U_info, U_sudate, P_key_id) VALUES (%s, %s, %s, %s, %s)'
             cursor.execute(sql, (name, img, introduce, signup, p['P_key']))
         conn.commit()
-        print('entering')
+
     
     time.sleep(2)
 #총합
@@ -103,7 +108,7 @@ def get_info(p):
         sql = 'INSERT INTO myapi_total (T_like_count_A_Y, T_unlike_count_Y, T_view_count_A_Y_T, T_update, P_key_id) VALUES (%s, %s, %s, %s, %s)'
         cursor.execute(sql, (t_ok_cnt, 0, t_view_cnt, createtime ,p['P_key']))
     conn.commit()
-    print('entering')
+
 
     time.sleep(2)
     #일간 차
@@ -116,7 +121,7 @@ def get_info(p):
             sql = 'INSERT INTO myapi_d_sub_gap (sub_count, P_key_id) VALUES (%s, %s)'
             cursor.execute(sql, (D_sub, p['P_key']))
         conn.commit()
-        print('entering')
+
     
     time.sleep(2)
 
@@ -130,7 +135,7 @@ def get_info(p):
             sql = 'INSERT INTO myapi_w_sub_gap (U_name, U_img, U_info, U_sudate, P_key_id) VALUES (%s, %s, %s, %s, %s)'
             cursor.execute(sql, (W_sub, p['P_key']))
         conn.commit()
-        print('entering')
+
 
     time.sleep(2)
 
@@ -144,7 +149,7 @@ def get_info(p):
             sql = 'INSERT INTO myapi_m_sub_gap (U_name, U_img, U_info, U_sudate, P_key_id) VALUES (%s, %s, %s, %s, %s)'
             cursor.execute(sql, (M_sub, p['P_key']))
         conn.commit()
-        print('entering')
+
 
     time.sleep(2)
 
@@ -179,7 +184,7 @@ def get_info(p):
                     key
                 ))
             conn.commit()
-            print('entering')
+
       T_video = Video.objects.filter(P_key_id=key).filter(year=year).filter(month=month).filter(day=day).values("like_A_Y", "view_A_Y_T","comment_A_Y")
       Y_video = Video.objects.filter(P_key_id=key).filter(year=year).filter(month=month).filter(day=day-1).values("like_A_Y", "view_A_Y_T","comment_A_Y")
       if bool(Y_video):
@@ -191,7 +196,7 @@ def get_info(p):
             sql = "INSERT INTO myapi_d_video_gap (like_A_Y, view_A_Y_T, comment_A_Y, P_key_id) VALUES (%s, %s, %s, %s)"
             cursor.execute(sql, (like, view, comment, key))
             conn.commit()
-            print('entering')
+
       TW_video = Video.objects.filter(P_key_id=key).filter(year=year).filter(week=week).values("like_A_Y", "view_A_Y_T","comment_A_Y")
       LW_video = TW_video = Video.objects.filter(P_key_id=key).filter(year=year).filter(week=week-1).values("like_A_Y", "view_A_Y_T","comment_A_Y")
       W_total = {'like':0 , 'view':0, 'comment':0}
@@ -205,7 +210,7 @@ def get_info(p):
           sql = 'INSERT INTO myapi_w_video_gap (like_A_Y, view_A_Y_T, comment_A_Y, P_key_id) VALUES (%s, %s, %s, %s)'
           cursor.execute(sql, (W_total['like'], W_total['view'] , W_total['comment'], key))
           conn.commit()
-          print('entering')
+
       TM_video = Video.objects.filter(P_key_id=key).filter(year=year).filter(month=month).values("like_A_Y", "view_A_Y_T","comment_A_Y")
       LM_video = Video.objects.filter(P_key_id=key).filter(year=year).filter(month=month-1).values("like_A_Y", "view_A_Y_T","comment_A_Y")
       M_total = {'like':0 , 'view':0, 'comment':0}
