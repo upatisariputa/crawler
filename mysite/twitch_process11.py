@@ -32,10 +32,16 @@ def get_platform_info():
         P_userkey = str(sheet.cell(r, 0).value)
         P_url = sheet.cell(r, 1).value
         P_name = sheet.cell(r, 2).value
-        with conn.cursor() as cursor:
-            sql = 'INSERT INTO myapi_platform (P_url, P_userkey, P_name) VALUES (%s, %s, %s)'
-            cursor.execute(sql, (P_url, P_userkey, P_name))
-        conn.commit()
+       
+        if bool(Platform.objects.filter(P_userkey=P_userkey)):
+            with conn.cursor() as cursor:
+                sql = 'UPDATE myapi_platform SET P_url=%s, P_name=%s WHERE P_userkey=%s'
+                cursor.execute(sql, (P_url, P_name, P_userkey)) 
+        else :
+            with conn.cursor() as cursor:
+                sql = 'INSERT INTO myapi_platform (P_url, P_userkey, P_name) VALUES (%s, %s, %s)'
+                cursor.execute(sql, (P_url, P_userkey, P_name))
+            conn.commit()
     print('data migration complete')
 
 def combine_id_p_key(id_list):
@@ -151,9 +157,9 @@ def get_video_info(id_list):
 
 def get_total(id_list):
     platform_key = id_list[0]
-    t_view_cnt = Video.objects.filter(P_key_id=platform_key).aggregate(total=Sum('T_view_count'))
+    t_view_cnt = Video.objects.filter(P_key_id=platform_key).aggregate(total=Sum('T_view_count_Y_A_T'))
     with conn.cursor() as cursor:      
-        sql = 'INSERT INTO myapi_total (T_like_count_A_Y, T_unlike_count_Y, T_view_count_A_Y_T, T_update, P_key_id) VALUES (%s, %s, %s, %s, %s)'
+        sql = 'INSERT INTO myapi_total (T_like_count_A_Y, T_unlike_count_Y, T_view_count_Y_A_T, T_update, P_key_id) VALUES (%s, %s, %s, %s, %s)'
         cursor.execute(sql, ("null", "null", t_view_cnt, createtime, platform_key))
         conn.commit()
 

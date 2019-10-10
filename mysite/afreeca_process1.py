@@ -37,7 +37,7 @@ def get_platform_info():
 
         if bool(Platform.objects.filter(P_userkey=P_userkey)):
             with conn.cursor() as cursor:
-                sql = 'UPDATE myapi_platform (P_url, P_name) VALUES (%s, %s) WHERE P_userkey=%s'
+                sql = 'UPDATE myapi_platform SET P_url=%s, P_name=%s WHERE P_userkey=%s'
                 cursor.execute(sql, (P_url, P_name, P_userkey)) 
         else :
             with conn.cursor() as cursor:
