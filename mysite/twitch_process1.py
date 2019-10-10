@@ -156,7 +156,7 @@ def get_video_info(id_list):
 
 def get_total(id_list):
     platform_key = id_list[0]
-    t_view_cnt = Video.objects.filter(P_key_id=platform_key).aggregate(total=Sum('T_view_count'))
+    t_view_cnt = Video.objects.filter(P_key_id=platform_key).aggregate(total=Sum('T_view_count_Y_A_T'))
     with conn.cursor() as cursor:      
         sql = 'INSERT INTO myapi_total (T_like_count_A_Y, T_unlike_count_Y, T_view_count_Y_A_T, T_update, P_key_id) VALUES (%s, %s, %s, %s, %s)'
         cursor.execute(sql, ("null", "null", t_view_cnt, createtime, platform_key))
