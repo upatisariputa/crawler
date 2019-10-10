@@ -1,89 +1,182 @@
-from .serializers import TotalSerializer
-from .models import Total
-from .serializers import User_infoSerializer
-from .models import User_info
-from .serializers import VideoSerializer
-from .models import Video
-from .serializers import SubSerializer
-from .models import Subscribe
-from .serializers import platformSerializer
-from .models import Platform
-from django.shortcuts import get_object_or_404
+from .models import Total, User_info, Video, Subscribe, Platform
+from .serializers import mainSerializer ,bjSerializer, daySerializer, videolistSerializer, weekSerializer, monthSerializer
+from rest_framework import filters, generics, views, viewsets, permissions
+
+from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework as filters
+
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import viewsets
-from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from rest_framework import permissions
+
 import os
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "illio.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "ilio.settings")
+# class ProductList(generics.ListAPIView): 
+#     queryset = Product.objects.all() 
+#     serializer_class = ProductSerializer 
+#     filter_backends = (DjangoFilterBackend,) 
+#     filter_fields = ('category', 'in_stock')
+
 
 
 class MainViewSet(viewsets.ModelViewSet):
-    print(Platform.objects.all())
+    queryset = Platform.objects.all()
+    serializer_class = mainSerializer
+    permission_classes = [permissions.IsAdminUser]
 
 
-# class BjViewSet(viewsets.ModelViewSet):
+# class AllBjViewSet(generics.ListAPIView):
+#     queryset = Platform.objects.all()
+#     serializer_class = bjSerializer
+#     filter_fields = ('P_userkey','P_name')
 
-def Bj_info(request, userkey):
-    if request.method == "POST":
-        user = User_info.objects.filter(P_key=userkey)
-        sub = Subscribe.objects.filter(P_key=userkey)
-        youtube = Platform.objects.prefetch_related(
-            "total").filter(P_key=userkey).get(P_name=youtube)
-        twitch = Platform.objects.prefetch_related(
-            "total").filter(P_key=userkey).get(P_name=youtube)
-        afreeca = Platform.objects.prefetch_related(
-            "total").filter(P_key=userkey).get(P_name=youtube)
-        result = {"name": user.U_nmae,
-                  "image": user.U_img,
-                  "signup-date": user.U_suday,
-                  "introduce": user.U_info,
-                  "currnet_sub": {
-                      "youtube": sub,
-                      "twitch": sub,
-                      "afreeca": sub
-                  },
-                  "youtube": {
-                      "total_like": youtube.T_like,
-                      "total_dislike": youtube.T_dislike,
-                      "total_view": youtube.T_view
-                  },
-                  "twitch": {
-                      "total_view": twitch.T_view
-                  },
-                  "afreeca": {
-                      "total_like": afreeca.T_like,
-                      "total_view": afreeca.T_view
-                  }
-                  }
+class ProductList(generics.ListAPIView): 
+    queryset = Platform.objects.all() 
+    serializer_class = mainSerializer 
+    filter_backends = (DjangoFilterBackend,) 
+    filter_fields = ('P_userkey', 'P_name')
 
 
-class SubListViewSet(viewsets.ModelViewSet):
-    queryset = Subscribe.objects.all().select_related("platform")
-    serializer_class = SubSerializer
+class AllBjViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Platform.objects.all()
+    serializer_class = bjSerializer
+    lookup_field = 'P_userkey'
+    permission_classes = [permissions.IsAdminUser]
+
+    @action(detail=True)
+    def group_names(self, request, pk=None):
+        user = self.get_object()
+        groups = user.groups.all()
+        return Response([group.name for group in groups])
 
 
-class BjListViewSet(viewsets.ModelViewSet):
-    queryset = Platform.objects.all().select_related("Total")
-    serializer_class = platformSerializer
+class ABjViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Platform.objects.filter(P_name="afreeca")
+    serializer_class = bjSerializer
+    lookup_field = 'P_userkey'
+    permission_classes = [permissions.IsAdminUser]
+
+    @action(detail=True)
+    def group_names(self, request, pk=None):
+        user = self.get_object()
+        groups = user.groups.all()
+        return Response([group.name for group in groups])
 
 
-class MaxLikeVideo(viewsets.ModelViewSet):
-    queryset = Video.objects.all().order_by("like_count")
-    serializer_class = VideoSerializer
+class YBjViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Platform.objects.filter(P_name="youtube")
+    serializer_class = bjSerializer
+    lookup_field = 'P_userkey'
+    permission_classes = [permissions.IsAdminUser]
+
+    @action(detail=True)
+    def group_names(self, request, pk=None):
+        user = self.get_object()
+        groups = user.groups.all()
+        return Response([group.name for group in groups])
 
 
-class MinLikeVideo(viewsets.ModelViewSet):
-    queryset = Video.objects.all().order_by("-like_count")
-    serializer_class = VideoSerializer
+class TBjViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Platform.objects.filter(P_name="twitch")
+    serializer_class = bjSerializer
+    lookup_field = 'P_userkey'
+    permission_classes = [permissions.IsAdminUser]
+
+    @action(detail=True)
+    def group_names(self, request, pk=None):
+        user = self.get_object()
+        groups = user.groups.all()
+        return Response([group.name for group in groups])
 
 
-class MaxViewCount(viewsets.ModelViewSet):
-    queryset = Video.objects.all().order_by("view_count")
-    serializer_class = VideoSerializer
+class AllVideolistViewSet(viewsets.ModelViewSet):
+    queryset = Platform.objects.all()
+    serializer_class = videolistSerializer
+    lookup_field = 'P_userkey'
+    permission_classes = [permissions.IsAdminUser]
+
+    @action(detail=True)
+    def group_names(self, request, pk=None):
+        user = self.get_object()
+        groups = user.groups.all()
+        return Response([group.name for group in groups])
 
 
-class MinViewCount(viewsets.ModelViewSet):
-    queryset = Video.objects.all().order_by("view_count")
-    serializer_class = VideoSerializer
+class AVideolistViewSet(viewsets.ModelViewSet):
+    queryset = Platform.objects.filter(P_name="afreeca")
+    serializer_class = videolistSerializer
+    lookup_field = 'P_userkey'
+    permission_classes = [permissions.IsAdminUser]
 
-# def MaxGapYotubeViewSet(request,)
+    @action(detail=True)
+    def group_names(self, request, pk=None):
+        user = self.get_object()
+        groups = user.groups.reverse()[:7]
+        return Response([group.name for group in groups])
+
+
+class YVideolistViewSet(viewsets.ModelViewSet):
+    queryset = Platform.objects.filter(P_name="youtube")
+    serializer_class = videolistSerializer
+    lookup_field = 'P_userkey'
+    permission_classes = [permissions.IsAdminUser]
+
+    @action(detail=True)
+    def group_names(self, request, pk=None):
+        user = self.get_object()
+        groups = user.groups.all()
+        return Response([group.name for group in groups])
+
+
+class TVideolistViewSet(viewsets.ModelViewSet):
+    queryset = Platform.objects.filter(P_name="twitch")
+    serializer_class = videolistSerializer
+    lookup_field = 'P_userkey'
+    permission_classes = [permissions.IsAdminUser]
+
+    @action(detail=True)
+    def group_names(self, request, pk=None):
+        user = self.get_object()
+        groups = user.groups.all()
+        return Response([group.name for group in groups])
+
+
+class DayViewSet(viewsets.ModelViewSet):
+    queryset = Platform.objects.all()
+    serializer_class = daySerializer
+    lookup_field = 'P_userkey'
+    permission_classes = [permissions.IsAdminUser]
+
+    @action(detail=True)
+    def group_names(self, request, pk=None):
+        user = self.get_object()
+        groups = user.groups.all()
+        return Response([group.name for group in groups])
+
+
+class WeekViewSet(viewsets.ModelViewSet):
+    queryset = Platform.objects.all()
+    serializer_class = weekSerializer
+    lookup_field = 'P_name'
+    permission_classes = [permissions.IsAdminUser]
+
+    @action(detail=True)
+    def group_names(self, request, pk=None):
+        user = self.get_object()
+        groups = user.groups.all()
+        return Response([group.name for group in groups])
+
+
+class MonthViewset(viewsets.ModelViewSet):
+    queryset = Platform.objects.all()
+    serializer_class = monthSerializer
+    lookup_field = 'P_name'
+    permission_classes = [permissions.IsAdminUser]
+
+    @action(detail=True)
+    def group_names(self, request, pk=None):
+        user = self.get_object()
+        groups = user.groups.all()
+        return Response([group.name for group in groups])
