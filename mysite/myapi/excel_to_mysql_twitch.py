@@ -1,8 +1,8 @@
 import xlrd
 import pymysql.cursors
 
-book = xlrd.open_workbook('twitch.xlsx')
-sheet = book.sheet_by_name('시트 1')
+book = xlrd.open_workbook('afreeca.xlsx')
+sheet = book.sheet_by_name('afreeca')
 
 conn = pymysql.connect(host='localhost', user='root',
                        password=None, db='ilio', charset='utf8mb4')
