@@ -54,9 +54,9 @@ class Video(models.Model):
 
 class Total(models.Model):
     T_key = models.AutoField(primary_key=True)
-    T_like_count = models.IntegerField(default=0)
-    T_unlike_count = models.IntegerField(default=0)
-    T_view_count = models.IntegerField(default=0)
+    T_like_count = models.CharField(max_length=100)
+    T_unlike_count = models.CharField(max_length=100)
+    T_view_count = models.CharField(max_length=100)
     T_update = models.DateField(null=False)
     P_key = models.ForeignKey(
         Platform, related_name="Total", on_delete=models.CASCADE)
