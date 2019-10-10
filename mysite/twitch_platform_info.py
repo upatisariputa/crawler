@@ -188,7 +188,6 @@ user_names = ['rosebari',
 'ppiyo00',
 'leeseul222',
 'meronya1213',
-'i_am_bona',
 'sorubeing',
 'vb0dv',
 'ritming',
@@ -1599,4 +1598,4 @@ def multiprocesses():
 
 
 if __name__ == '__main__':
-    multiprocesses()
+    print(len(user_names))
