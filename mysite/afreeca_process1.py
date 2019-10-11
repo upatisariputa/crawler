@@ -24,7 +24,7 @@ createtime = strftime('%Y-%m-%d', localtime())
 # Platform table 에서 값을 가져온다. 
 
 def get_platform_info():
-    book = xlrd.open_workbook('afreeca (1).xlsx')
+    book = xlrd.open_workbook('afreeca.xlsx')
     sheet = book.sheet_by_name('afreeca')
 
     conn = pymysql.connect(host='localhost', user='root',
@@ -55,7 +55,7 @@ def get_info(p):
                             db='ilio',
                             charset='utf8mb4')
     name = p['P_url'].replace('http://bj.afreecatv.com/', '')
-#  print(i['P_url'].replace(r'(/(http(s)?:\/\/)([a-z0-9\w]+\.*)+[a-z0-9]{2,4}\//gi)', ')) 정규 표현식 사용법 찾아보기
+
     # 팬클럽, 서포터  수 정보
     URL = 'http://bjapi.afreecatv.com/api/'+ name +'/station/detail'
     response = urlopen(URL)
@@ -76,7 +76,6 @@ def get_info(p):
     t_view_cnt = bj_info['station']['upd']['total_view_cnt']
     signup = bj_info['station']['jointime']
 
-    # print(img, '\n', introduce, '\n', name, '\n', '\n', fav_fan, '\n', signup)
 
     #구독 정보
     with conn.cursor() as cursor:
@@ -103,7 +102,8 @@ def get_info(p):
             # print(cursor.lastrowid)
     
     time.sleep(2)
-#총합
+    
+    #총합
     with conn.cursor() as cursor:      
         sql = 'INSERT INTO myapi_total (T_like_count, T_unlike_count, T_view_count, T_update, P_key_id) VALUES (%s, %s, %s, %s, %s)'
         cursor.execute(sql, (t_ok_cnt, 0, t_view_cnt, createtime ,p['P_key']))
@@ -111,6 +111,7 @@ def get_info(p):
         # print(cursor.lastrowid)
 
     time.sleep(2)
+    
     #일간 차
     TDsub = Subscribe.objects.filter(P_key_id=p['P_key']).filter(year=year).filter(month=month).filter(day=day).values('S_count')
     YDsub = Subscribe.objects.filter(P_key_id=p['P_key']).filter(year=year).filter(month=month).filter(day=day-1).values('S_count')
@@ -185,6 +186,7 @@ def get_info(p):
                 ))
             conn.commit()
             # print(cursor.lastrowid)
+     
       T_video = Video.objects.filter(P_key_id=key).filter(year=year).filter(month=month).filter(day=day).values("like_A_Y", "view_A_Y_T","comment_A_Y")
       Y_video = Video.objects.filter(P_key_id=key).filter(year=year).filter(month=month).filter(day=day-1).values("like_A_Y", "view_A_Y_T","comment_A_Y")
       if bool(Y_video):
@@ -197,6 +199,7 @@ def get_info(p):
             cursor.execute(sql, (like, view, comment, key))
             conn.commit()
             print(cursor.lastrowid)
+      
       TW_video = Video.objects.filter(P_key_id=key).filter(year=year).filter(week=week).values("like_A_Y", "view_A_Y_T","comment_A_Y")
       LW_video = TW_video = Video.objects.filter(P_key_id=key).filter(year=year).filter(week=week-1).values("like_A_Y", "view_A_Y_T","comment_A_Y")
       W_total = {'like':0 , 'view':0, 'comment':0}
@@ -211,6 +214,7 @@ def get_info(p):
           cursor.execute(sql, (W_total['like'], W_total['view'] , W_total['comment'], key))
           conn.commit()
           print(cursor.lastrowid)
+      
       TM_video = Video.objects.filter(P_key_id=key).filter(year=year).filter(month=month).values("like_A_Y", "view_A_Y_T","comment_A_Y")
       LM_video = Video.objects.filter(P_key_id=key).filter(year=year).filter(month=month-1).values("like_A_Y", "view_A_Y_T","comment_A_Y")
       M_total = {'like':0 , 'view':0, 'comment':0}
