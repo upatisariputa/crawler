@@ -1,12 +1,13 @@
 import pymysql.cursors, requests, time, re, xlrd, os
 from django.db.models import Sum
 from time import localtime, strftime
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
 
 import django
 django.setup()
+from myapi.models import Platform, Subscribe, User_info, Video
+from multiprocessing import Pool
 
 from myapi.models import Platform, Subscribe, User_info, Video
 from multiprocessing import Pool
@@ -25,14 +26,13 @@ createtime = strftime('%Y-%m-%d', localtime())
 
 def get_platform_info():
     book = xlrd.open_workbook('twitch.xlsx')
-    sheet = book.sheet_by_name('Sheet10')
+    sheet = book.sheet_by_name('Main')
     conn = pymysql.connect(host='localhost', user='root',
                            password=None, db='ilio', charset='utf8mb4')
     for r in range(0, sheet.nrows):
         P_userkey = str(sheet.cell(r, 0).value)
         P_url = sheet.cell(r, 1).value
         P_name = sheet.cell(r, 2).value
-        
         if bool(Platform.objects.filter(P_userkey=P_userkey)):
             with conn.cursor() as cursor:
                 sql = 'UPDATE myapi_platform SET P_url=%s, P_name=%s WHERE P_userkey=%s'
@@ -46,12 +46,12 @@ def get_platform_info():
 
 def combine_id_p_key(id_list):
     p_keys = []
+    p_keys = Platform.objects.filter(P_name='twitch').values('P_key')[900:1000]
+    
     combined = []
-    r = Platform.objects.values('P_key')
-    for keys in r:
-        p_keys.append(keys['P_key'])
+    
     for key in p_keys:
-        combined.append([key])
+        combined.append([key['P_key']])
     
     i = 0
     
@@ -63,96 +63,122 @@ def combine_id_p_key(id_list):
     return lists
 
 def get_user_info(id_list):
-    r = requests.get('https://api.twitch.tv/helix/users?id=' +
-                    id_list[1], headers=headers)
-    user = r.json()
-    image_url = user['data'][0]['profile_image_url']
-    user_name = user['data'][0]['display_name']
-    user_info = user['data'][0]['description']
-    platform_key = id_list[0]
-    
-    if bool(User_info.objects.filter(P_key = platform_key)):
-        with conn.cursor() as cursor:      
-            sql = 'UPDATE myapi_user_info SET (U_name, U_img, U_info, U_sudate) WHERE (P_key_id) VALUES (%s, %s, %s, %s, %s)'
-            cursor.execute(sql, (user_name, image_url, user_info, 'null', platform_key))
-        conn.commit()
-        print(platform_key)
-    else:
-        with conn.cursor() as cursor:      
-            sql = 'INSERT INTO myapi_user_info (U_name, U_img, U_info, U_sudate, P_key_id) VALUES (%s, %s, %s, %s, %s)'
-            cursor.execute(sql, (user_name, image_url, user_info, 'null', platform_key))
-        conn.commit()
-        print(platform_key)
-   
-    time.sleep(2)
+    try:
+        r = requests.get('https://api.twitch.tv/helix/users?id=' +
+                        id_list[1], timeout=5, headers=headers)
+        user = r.json()
+        image_url = user['data'][0]['profile_image_url']
+        user_name = user['data'][0]['display_name']
+        user_info = user['data'][0]['description']
+        platform_key = id_list[0]
+        
+        if bool(User_info.objects.filter(P_key = platform_key)):
+            with conn.cursor() as cursor:      
+                sql = 'UPDATE myapi_user_info SET (U_name, U_img, U_info, U_sudate) WHERE (P_key_id) VALUES (%s, %s, %s, %s, %s)'
+                cursor.execute(sql, (user_name, image_url, user_info, 'null', platform_key))
+            conn.commit()
+
+        else:
+            with conn.cursor() as cursor:      
+                sql = 'INSERT INTO myapi_user_info (U_name, U_img, U_info, U_sudate, P_key_id) VALUES (%s, %s, %s, %s, %s)'
+                cursor.execute(sql, (user_name, image_url, user_info, 'null', platform_key))
+            conn.commit()
+        time.sleep(2)
+    except requests.exceptions.HTTPError as errh:
+        print ("Http Error:",errh)
+    except requests.exceptions.ConnectionError as errc:
+        print ("Error Connecting:",errc)
+    except requests.exceptions.Timeout as errt:
+        print ("Timeout Error:",errt)
+    except requests.exceptions.RequestException as err:
+        print ("OOps: Something Else",err)
     
 def get_followers_info(id_list):
-    r = requests.get(
-        'https://api.twitch.tv/helix/users/follows?to_id=' + id_list[1] + '', headers=headers)
-    followers = r.json()
-    number_of_followers = followers['total']
-    platform_key = id_list[0]
-    with conn.cursor() as cursor:
-        sql = 'INSERT INTO myapi_subscribe (created_at, S_count, year, month, week, day, P_key_id) VALUES (%s, %s, %s, %s, %s, %s, %s)'
-        cursor.execute(sql, ('null', number_of_followers, year, month, week, day, platform_key))
-    conn.commit()
-    time.sleep(2)
-    TDsub = Subscribe.objects.filter(P_key_id=platform_key).filter(year=year).filter(month=month).filter(day=day).values('S_count')
-    YDsub = Subscribe.objects.filter(P_key_id=platform_key).filter(year=year).filter(month=month).filter(day=day-1).values('S_count')
-    
-    if len(TDsub) >= 1 and len(YDsub) >= 1:
-        D_sub = TDsub[0]['S_count']-YDsub[0]['S_count']
-        with conn.cursor() as cursor:      
-            sql = 'INSERT INTO myapi_d_sub_gap (sub_count, P_key_id) VALUES (%s, %s)'
-            cursor.execute(sql, (D_sub, platform_key))
+    try:
+        r = requests.get(
+            'https://api.twitch.tv/helix/users/follows?to_id=' + id_list[1] + '', timeout=5, headers=headers)
+        followers = r.json()
+        number_of_followers = followers['total']
+        platform_key = id_list[0]
+        with conn.cursor() as cursor:
+            sql = 'INSERT INTO myapi_subscribe (created_at, S_count, year, month, week, day, P_key_id) VALUES (%s, %s, %s, %s, %s, %s, %s)'
+            cursor.execute(sql, ('null', number_of_followers, year, month, week, day, platform_key))
         conn.commit()
-    TWsub = Subscribe.objects.filter(P_key_id=platform_key).filter(year=year).filter(week=month).aggregate(total=Sum('S_count'))
-    LWsub = Subscribe.objects.filter(P_key_id=platform_key).filter(year=year).filter(week=month-1).aggregate(total=Sum('S_count'))
-    if bool(TWsub['total']) and bool(LWsub['total']) :
-        W_sub = TWsub[0]['S_count']-LWsub[0]['S_count']
-        with conn.cursor() as cursor:      
-            sql = 'INSERT INTO myapi_w_sub_gap (U_name, U_img, U_info, U_sudate, P_key_id) VALUES (%s, %s, %s, %s, %s)'
-            cursor.execute(sql, (W_sub, platform_key))
-        conn.commit()
-    
-    TMsub = Subscribe.objects.filter(P_key_id=platform_key).filter(year=year).filter(month=month).aggregate(total=Sum('S_count'))
-    LMsub = Subscribe.objects.filter(P_key_id=platform_key).filter(year=year).filter(month=month-1).aggregate(total=Sum('S_count'))
-    
-    if bool(TMsub['total']) and bool(LMsub['total']) :
-        M_sub = TMsub[0]['S_count']-LMsub[0]['S_count']
-        with conn.cursor() as cursor:      
-            sql = 'INSERT INTO myapi_m_sub_gap (U_name, U_img, U_info, U_sudate, P_key_id) VALUES (%s, %s, %s, %s, %s)'
-            cursor.execute(sql, (M_sub, platform_key))
-        conn.commit()
-    time.sleep(2)
+
+        TDsub = Subscribe.objects.filter(P_key_id=platform_key).filter(year=year).filter(month=month).filter(day=day).values('S_count')
+        YDsub = Subscribe.objects.filter(P_key_id=platform_key).filter(year=year).filter(month=month).filter(day=day-1).values('S_count')
+        
+        if len(TDsub) >= 1 and len(YDsub) >= 1:
+            D_sub = TDsub[0]['S_count']-YDsub[0]['S_count']
+            with conn.cursor() as cursor:      
+                sql = 'INSERT INTO myapi_d_sub_gap (sub_count, P_key_id) VALUES (%s, %s)'
+                cursor.execute(sql, (D_sub, platform_key))
+            conn.commit()
+        TWsub = Subscribe.objects.filter(P_key_id=platform_key).filter(year=year).filter(week=month).aggregate(total=Sum('S_count'))
+        LWsub = Subscribe.objects.filter(P_key_id=platform_key).filter(year=year).filter(week=month-1).aggregate(total=Sum('S_count'))
+        if bool(TWsub['total']) and bool(LWsub['total']) :
+            W_sub = TWsub[0]['S_count']-LWsub[0]['S_count']
+            with conn.cursor() as cursor:      
+                sql = 'INSERT INTO myapi_w_sub_gap (U_name, U_img, U_info, U_sudate, P_key_id) VALUES (%s, %s, %s, %s, %s)'
+                cursor.execute(sql, (W_sub, platform_key))
+            conn.commit()
+        
+        TMsub = Subscribe.objects.filter(P_key_id=platform_key).filter(year=year).filter(month=month).aggregate(total=Sum('S_count'))
+        LMsub = Subscribe.objects.filter(P_key_id=platform_key).filter(year=year).filter(month=month-1).aggregate(total=Sum('S_count'))
+        
+        if bool(TMsub['total']) and bool(LMsub['total']) :
+            M_sub = TMsub[0]['S_count']-LMsub[0]['S_count']
+            with conn.cursor() as cursor:      
+                sql = 'INSERT INTO myapi_m_sub_gap (U_name, U_img, U_info, U_sudate, P_key_id) VALUES (%s, %s, %s, %s, %s)'
+                cursor.execute(sql, (M_sub, platform_key))
+            conn.commit()
+        
+        time.sleep(2)
+    except requests.exceptions.HTTPError as errh:
+        print ("Http Error:",errh)
+    except requests.exceptions.ConnectionError as errc:
+        print ("Error Connecting:",errc)
+    except requests.exceptions.Timeout as errt:
+        print ("Timeout Error:",errt)
+    except requests.exceptions.RequestException as err:
+        print ("OOps: Something Else",err)
 
 def get_video_info(id_list):
-    videos = [] 
-    platform_key = id_list[0]
-    r = requests.get(
-        'https://api.twitch.tv/helix/videos?user_id=' + id_list[1] + '&first=100', headers=headers)
-    r = r.json()
-    pagination_cursor = r['pagination']['cursor']
-    videos += r['data']
-    while 1:
+    try:
+        videos = [] 
+        platform_key = id_list[0]
         r = requests.get(
-            'https://api.twitch.tv/helix/videos?user_id=' + id_list[1] + '&first=100&after=' + pagination_cursor, headers=headers)
+            'https://api.twitch.tv/helix/videos?user_id=' + id_list[1] + '&first=100', timeout=5, headers=headers)
         r = r.json()
+        pagination_cursor = r['pagination']['cursor']
         videos += r['data']
-        if r['pagination'] != {}:
-            pagination_cursor = r['pagination']['cursor']
-        else:
-            break
-    
-    for video in videos:
-        title = video['title']
-        update_date = video['published_at']
-        view_count = video['view_count']
-        with conn.cursor() as cursor:
-            sql = 'INSERT INTO myapi_video (V_name, V_upload, like_A_Y, dislike_Y, view_A_Y_T, comment_A_Y, year, month, week, day, P_key_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
-            cursor.execute(sql, (title, update_date, 'null', 'null', view_count, 'null', year, month, week, day, platform_key))
-    conn.commit()
-    time.sleep(2)
+        while 1:
+            r = requests.get(
+                'https://api.twitch.tv/helix/videos?user_id=' + id_list[1] + '&first=100&after=' + pagination_cursor, timeout=5, headers=headers)
+            r = r.json()
+            videos += r['data']
+            if r['pagination'] != {}:
+                pagination_cursor = r['pagination']['cursor']
+            else:
+                break
+        for video in videos:
+            title = video['title']
+            update_date = video['published_at']
+            view_count = video['view_count']
+            with conn.cursor() as cursor:
+                sql = 'INSERT INTO myapi_video (V_name, V_upload, like_A_Y, dislike_Y, view_A_Y_T, comment_A_Y, year, month, week, day, P_key_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+                cursor.execute(sql, (title, update_date, 'null', 'null', view_count, 'null', year, month, week, day, platform_key))
+        conn.commit()
+
+        time.sleep(2)
+    except requests.exceptions.HTTPError as errh:
+        print ("Http Error:",errh)
+    except requests.exceptions.ConnectionError as errc:
+        print ("Error Connecting:",errc)
+    except requests.exceptions.Timeout as errt:
+        print ("Timeout Error:",errt)
+    except requests.exceptions.RequestException as err:
+        print ("OOps: Something Else",err)
 
 
 def get_total(id_list):
@@ -185,5 +211,5 @@ if __name__ == '__main__':
     lists = combine_id_p_key(user_ids)
     for combined_list in lists:
         multiprocessing()
-    
     print('task completed')
+    conn.close()
