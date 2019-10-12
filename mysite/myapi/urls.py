@@ -4,7 +4,7 @@ from . import views
 
 router = DefaultRouter()
 router.register("main", views.MainViewSet, basename="main")
-# router.register("BJ", views.AllBjViewSet, basename="BJ")
+router.register("BJ", views.AllBjViewSet, basename="BJ")
 router.register("afreeca_bj", views.ABjViewSet, base_name="afreeca_bj")
 router.register("youtube_bj", views.YBjViewSet, base_name="youtube_bj")
 router.register("twitch_bj", views.TBjViewSet, base_name="twitch_bj")
