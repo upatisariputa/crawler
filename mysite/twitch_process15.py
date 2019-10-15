@@ -11,7 +11,8 @@ from multiprocessing import Pool
 
 from myapi.models import Platform, Subscribe, User_info, Video
 from multiprocessing import Pool
-headers = {'Client-ID': 'orr8549md8anh4puxs904dyswcgfb3',
+from client_id import clientId
+headers = {'Client-ID': clientId,
            'referer': 'https://twitch.tv'}
 conn = pymysql.connect(host='localhost', user='root',
                        password=None, db='ilio', charset='utf8mb4')
