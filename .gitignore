@@ -8,4 +8,4 @@ dfb.sqlite3
 .vscode
 migrations
 /__pycache__
-/mysite/client_id
+/mysite/client_id.py
